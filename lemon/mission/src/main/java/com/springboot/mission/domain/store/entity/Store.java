@@ -19,8 +19,10 @@ public class Store {
     @Column(nullable = false)
     private String title;
 
-    @Column(name = "category_id", nullable = false)
-    private String categoryId;
+    // 가게는 하나의 카테고리만 가짐 (N:1 관계)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
 
     @Column(name = "store_address", nullable = false)
     private String storeAddress;
@@ -34,7 +36,6 @@ public class Store {
     @Column(nullable = false)
     private String photo;
 
-    // 외래키: Region 엔티티와의 연관관계
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "address_id")
     private Region region;
