@@ -1,13 +1,10 @@
 package com.springboot.mission.domain.mission.dto;
 
-import com.springboot.mission.domain.review.dto.ReviewResponseDTO;
+import com.springboot.mission.domain.mission.entity.Mission;
 import com.springboot.mission.domain.store.entity.Store;
 import lombok.Builder;
+import org.springframework.data.domain.Page;
 
-import java.util.List;
-
-import com.springboot.mission.domain.mission.entity.Mission;
-import lombok.Builder;
 import java.util.List;
 
 public class MissionResponseDTO {
@@ -20,13 +17,8 @@ public class MissionResponseDTO {
             String mission_content,
             Boolean my_mission
     ){
-        /**
-         * Entity -> DTO 변환 (단일 카테고리 구조 반영)
-         */
         public static GetMissionInfo from(Mission mission, Boolean isMyMission) {
             Store store = mission.getStore();
-
-            // Store에서 바로 Category 엔티티에 접근하여 문자열 필드 'category'를 가져옴
             String categoryName = (store.getCategory() != null)
                     ? store.getCategory().getCategory()
                     : "미지정";
@@ -41,12 +33,33 @@ public class MissionResponseDTO {
         }
     }
 
+    /**
+     * 리스트 필드를 따로 두지 않고,
+     * 페이징에 필요한 정보와 변환된 데이터를 수평적으로 나열한 응답 구조입니다.
+     */
     @Builder
-    public record MissionListResponse(
-            List<GetMissionInfo> content,
-            Integer total_mission,
-            Integer page_offset
+    public record MissionPageResponse(
+            List<GetMissionInfo> missions, // 데이터 목록
+            Long total_elements,           // 전체 데이터 개수
+            Integer total_pages,           // 전체 페이지 수
+            Integer current_page,          // 현재 페이지 번호
+            Integer size,                  // 페이지당 데이터 개수
+            Boolean is_first,
+            Boolean is_last
     ) {
+        public static MissionPageResponse from(Page<Mission> missionPage) {
+            return MissionPageResponse.builder()
+                    .missions(missionPage.stream()
+                            .map(m -> GetMissionInfo.from(m, false))
+                            .toList())
+                    .total_elements(missionPage.getTotalElements())
+                    .total_pages(missionPage.getTotalPages())
+                    .current_page(missionPage.getNumber())
+                    .size(missionPage.getSize())
+                    .is_first(missionPage.isFirst())
+                    .is_last(missionPage.isLast())
+                    .build();
+        }
     }
 
     @Builder
@@ -55,11 +68,8 @@ public class MissionResponseDTO {
             String store_name,
             String mission_content,
             Integer score,
-            Boolean state // 도전 중(false) / 완료(true) 상태
+            Boolean state
     ) {
-        /**
-         * 마이페이지 '내 미션' 조회를 위한 매핑
-         */
         public static MyMissionInfo from(Mission mission, Boolean isCleared) {
             return MyMissionInfo.builder()
                     .mission_id(mission.getId())
@@ -71,10 +81,29 @@ public class MissionResponseDTO {
         }
     }
 
+    /**
+     * 마이페이지 전용 페이징 응답
+     */
     @Builder
-    public record MyMissionListResponse(
-            List<MyMissionInfo> content,
-            Integer total_mission,
-            Integer page_offset
-    ) {}
+    public record MyMissionPageResponse(
+            List<MyMissionInfo> missions,
+            Long total_elements,
+            Integer total_pages,
+            Integer current_page,
+            Boolean is_first,
+            Boolean is_last
+    ) {
+        public static MyMissionPageResponse from(Page<Mission> myMissionPage) {
+            return MyMissionPageResponse.builder()
+                    .missions(myMissionPage.stream()
+                            .map(m -> MyMissionInfo.from(m, false))
+                            .toList())
+                    .total_elements(myMissionPage.getTotalElements())
+                    .total_pages(myMissionPage.getTotalPages())
+                    .current_page(myMissionPage.getNumber())
+                    .is_first(myMissionPage.isFirst())
+                    .is_last(myMissionPage.isLast())
+                    .build();
+        }
+    }
 }

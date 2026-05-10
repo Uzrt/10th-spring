@@ -13,37 +13,48 @@ public class MissionController {
 
     private final MissionService missionService;
 
+    /**
+     * 홈 화면: 지역별 미션 페이징 조회
+     */
     @PostMapping("/home/local")
-    public ResponseEntity<MissionResponseDTO.MissionListResponse> getHomeMissions(
-            @RequestBody MissionRequestDTO.SearchMission request) {
+    public ResponseEntity<MissionResponseDTO.MissionPageResponse> getHomeMissionPage(
+            @RequestBody MissionRequestDTO.SearchMission request,
+            @RequestParam(name = "page", defaultValue = "0") int page) {
 
-        // page 값이 없으므로 기본값 0을 강제로 주입
-        MissionResponseDTO.MissionListResponse response =
-                missionService.getMissionList(request.keyword(), 0);
+        // 서비스 메서드명을 Page에 맞게 호출
+        MissionResponseDTO.MissionPageResponse response =
+                missionService.getMissionPageByRegion(request.keyword(), page);
 
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * 마이페이지: 내 미션 페이징 조회
+     */
     @GetMapping("/user/{userId}/missions")
-    public ResponseEntity<MissionResponseDTO.MyMissionListResponse> getUserMissions(
+    public ResponseEntity<MissionResponseDTO.MyMissionPageResponse> getMyMissionPage(
             @PathVariable(name = "userId") Long userId,
             @RequestHeader("Authorization") String token,
             @RequestParam(name = "page", defaultValue = "0") int page) {
 
-        MissionResponseDTO.MyMissionListResponse response = missionService.getMyMissionList(userId, token, page);
+        MissionResponseDTO.MyMissionPageResponse response =
+                missionService.getMyMissionPage(userId, token, page);
 
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * 미션 상태 업데이트 및 결과 페이지 반환
+     */
     @PutMapping("/user/{userId}/mission/{missionId}")
-    public ResponseEntity<MissionResponseDTO.MyMissionListResponse> updateMissionState(
+    public ResponseEntity<MissionResponseDTO.MyMissionPageResponse> updateMissionStatusAndGetPage(
             @PathVariable(name = "userId") Long userId,
             @PathVariable(name = "missionId") Long missionId,
             @RequestBody MissionRequestDTO.ClearMission request,
             @RequestHeader("Authorization") String token) {
 
-        MissionResponseDTO.MyMissionListResponse response =
-                missionService.clearMissionAndGetList(userId, missionId, request, token);
+        MissionResponseDTO.MyMissionPageResponse response =
+                missionService.updateMissionStatusAndGetPage(userId, missionId, request, token);
 
         return ResponseEntity.ok(response);
     }
