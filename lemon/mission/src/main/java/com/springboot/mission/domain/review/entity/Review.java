@@ -2,7 +2,6 @@ package com.springboot.mission.domain.review.entity;
 
 import com.springboot.mission.domain.store.entity.Store;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 import jakarta.persistence.*;
 
 @Entity

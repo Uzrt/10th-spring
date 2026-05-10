@@ -1,7 +1,7 @@
 package com.springboot.mission.domain.review.dto;
 
+import com.springboot.mission.domain.review.entity.Review;
 import lombok.Builder;
-
 import java.util.List;
 
 public class ReviewResponseDTO {
@@ -13,12 +13,23 @@ public class ReviewResponseDTO {
             Integer star,
             String content,
             String photo
-    ){}
+    ){
+        public static GetReviewInfo from(Review review) {
+            return GetReviewInfo.builder()
+                    .review_id(review.getId())
+                    .store_name(review.getStore().getTitle())
+                    .author(review.getNickname())
+                    .star(review.getStar())
+                    .content(review.getContent())
+                    .photo(review.getPhoto1())
+                    .build();
+        }
+    }
 
     @Builder
     public record ReviewListResponse(
             List<GetReviewInfo> content,
-            Integer total_mission,
+            Integer total_mission, // 보통 total_review가 적절하나 DTO 필드명 유지
             Integer page_offset
     ) {}
 }
