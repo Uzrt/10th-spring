@@ -21,4 +21,22 @@ public class UserResponseDTO {
                     .build();
         }
     }
+
+    @Builder
+    public record MyPageInfo(
+            Long user_id,
+            String email,
+            String nickname
+    ){
+        /**
+         * 엔티티를 마이페이지 DTO로 변환하는 정적 메서드
+         */
+        public static MyPageInfo from(User user) {
+            return MyPageInfo.builder()
+                    .user_id(user.getId())
+                    .email(user.getMail())
+                    .nickname(user.getNickname())
+                    .build();
+        }
+    }
 }
