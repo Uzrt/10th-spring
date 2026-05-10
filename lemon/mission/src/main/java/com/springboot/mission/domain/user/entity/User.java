@@ -14,34 +14,33 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "UUID")
-    private Long id; // 또는 UUID 타입 사용 시 private UUID id;
+    private Long id;
 
-    @Column(name = "name", nullable = false, length = 255)
+    @Column(nullable = false, length = 255)
     private String name;
 
-    @Column(name = "birth", nullable = false)
+    @Column(nullable = false) // 소셜에서 생년월일을 제공하지 않을 수도 있다면 false 제거 검토
     private LocalDate birth;
 
-    @Column(name = "gender")
-    private Integer gender; // INT 타입 매핑
+    @Column
+    private Integer gender; // 1: 남성, 2: 여성, 0: 기타
 
-    @Column(name = "address", nullable = false, length = 255)
+    @Column(nullable = false, length = 255)
     private String address;
 
     @Column(name = "is_deleted", nullable = false)
     @Builder.Default
-    private Boolean isDeleted = false; // TINYINT(1) 매핑, 기본값 false
+    private Boolean isDeleted = false;
 
-    @Column(name = "social", nullable = false, length = 255)
-    private String social;
+    @Column(nullable = false, length = 255)
+    private String social; // 예: "KAKAO", "GOOGLE", "NAVER"
 
-    @Column(name = "mail", nullable = false, length = 255)
-    private String mail;
+    @Column(nullable = false, length = 255, unique = true)
+    private String mail; // 소셜에서 제공하는 이메일 혹은 고유 식별값(ID)
 
     @Column(name = "phone_number", length = 255)
-    private String phoneNumber; // NULL 허용
+    private String phoneNumber;
 
-    @Column(name = "nickname", nullable = false, length = 255)
-    @Builder.Default
-    private String nickname = "사용자"; // 기본값 '사용자'
+    @Column(nullable = false, length = 255)
+    private String nickname;
 }
