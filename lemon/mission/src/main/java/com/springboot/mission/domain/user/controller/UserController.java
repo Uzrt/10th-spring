@@ -3,6 +3,7 @@ package com.springboot.mission.domain.user.controller;
 import com.springboot.mission.domain.user.dto.UserRequestDTO;
 import com.springboot.mission.domain.user.dto.UserResponseDTO;
 import com.springboot.mission.domain.user.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,7 @@ public class UserController {
      */
     @PostMapping("/join")
     public ResponseEntity<UserResponseDTO.JoinResponse> joinUser(
-            @RequestBody UserRequestDTO.JoinUser request) {
+            @RequestBody @Valid UserRequestDTO.JoinUser request) {
 
         // 서비스에서 생성된 결과를 그대로 반환하여 응답의 일관성을 유지합니다.
         UserResponseDTO.JoinResponse response = userService.join(request);
