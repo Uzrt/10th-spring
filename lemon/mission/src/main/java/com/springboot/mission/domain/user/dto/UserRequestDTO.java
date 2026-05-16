@@ -1,6 +1,7 @@
 package com.springboot.mission.domain.user.dto;
 
 import com.springboot.mission.domain.user.entity.User;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 
 import java.time.LocalDate;
@@ -9,9 +10,13 @@ public class UserRequestDTO {
 
     @Builder
     public record JoinUser(
+            @NotBlank(message = "메일은 필수 입력입니다.")
             String mail,        // 소셜 고유 식별자/이메일
+            @NotBlank(message = "이름은 필수 입력입니다.")
             String name,        // 소셜 프로필 이름
+            @NotBlank(message = "생일은 필수 입력입니다.")
             LocalDate birthday, // 생년월일
+            @NotBlank(message = "성별은 필수 입력입니다.")
             String gender,      // "male", "female" 등
             String address,
             String socialType   // "KAKAO" 등
