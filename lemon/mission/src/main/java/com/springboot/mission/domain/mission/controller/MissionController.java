@@ -35,10 +35,11 @@ public class MissionController {
     public ResponseEntity<MissionResponseDTO.MyMissionPageResponse> getMyMissionPage(
             @PathVariable(name = "userId") Long userId,
             @RequestHeader("Authorization") String token,
-            @RequestParam(name = "page", defaultValue = "0") int page) {
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "status", required = false) Boolean status) {
 
         MissionResponseDTO.MyMissionPageResponse response =
-                missionService.getMyMissionPage(userId, token, page);
+                missionService.getMyMissionPage(userId, token, page, status);
 
         return ResponseEntity.ok(response);
     }

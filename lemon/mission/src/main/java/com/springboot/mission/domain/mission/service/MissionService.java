@@ -37,14 +37,24 @@ public class MissionService {
     /**
      * 사용자의 미션 페이지 조회
      */
-    public MissionResponseDTO.MyMissionPageResponse getMyMissionPage(Long userId, String token, int page) {
+    public MissionResponseDTO.MyMissionPageResponse getMyMissionPage(Long userId, String token, int page, boolean status) {
+        // 1. 유저 존재 검증
         userRepository.findById(userId)
                 .orElseThrow(() -> new ProjectException(GeneralErrorCode.NOT_FOUND));
 
         PageRequest pageRequest = PageRequest.of(page, 10);
-        // 실제 운영 환경에서는 유저-미션 매핑 테이블을 조회해야 함
-        Page<Mission> myMissionPage = missionRepository.findAll(pageRequest);
+        Page<MemberMission> myMissionPage;
 
+        // 2. status 값에 따른 리포지토리 분기 처리
+        if (!status) {
+            // 진행 중인 미션만 조회 (isCompleted가 false인 데이터)
+            myMissionPage = memberMissionRepository.findAllByUserIdAndIsCompletedFalse(userId, pageRequest);
+        } else {
+            // 전체 미션 조회
+            myMissionPage = memberMissionRepository.findAllByUserId(userId, pageRequest);
+        }
+
+        // 3. 변환된 페이징 DTO 반환
         return MissionResponseDTO.MyMissionPageResponse.from(myMissionPage);
     }
 
@@ -65,6 +75,6 @@ public class MissionService {
         }
 
         // 3. 업데이트 결과가 반영된 페이지를 다시 조회하여 반환
-        return getMyMissionPage(userId, token, 0);
+        return getMyMissionPage(userId, token, 0, true);
     }
 }
