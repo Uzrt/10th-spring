@@ -26,4 +26,18 @@ public class ReviewController {
 
         return ResponseEntity.ok(response);
     }
+
+    /**
+     * 내가 작성한 리뷰 목록 페이징 조회 API
+     */
+    @GetMapping("/{userId}/reviews")
+    public ResponseEntity<ReviewResponseDTO.ReviewListResponse> getMyReviews(
+            @PathVariable(name = "userId") Long userId,
+            @RequestHeader("Authorization") String token,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "sort", defaultValue = "id") String sort) { // 정렬 파라미터 추가
+
+        ReviewResponseDTO.ReviewListResponse response = reviewService.getMyReviewPage(userId, page, sort);
+        return ResponseEntity.ok(response);
+    }
 }
